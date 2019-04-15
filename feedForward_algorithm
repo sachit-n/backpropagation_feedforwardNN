@@ -6,6 +6,7 @@ Created on Mon Apr 15 22:04:56 2019
 @author: sachitnagpal
 """
 
+
 '''
 Steps: 
     1. Initialize Weights Matrix
@@ -17,3 +18,25 @@ Steps:
     4. Update weights and biases
     5. Repeat till no. of epochs
 '''
+
+
+import numpy as np
+
+
+'''
+The parameter, layerN is a list containing the number of nodes in each layer, including the input and output layers. 
+Eg. layerN = [10000, 5,5,10] means the input layer has 10000 nodes, 
+there are two hidden layers with 5 nodes each and the ouput layer has 10 nodes.
+'''
+
+#%%
+def initialize_weights(layerN):
+    W = {}
+    for l in range(len(layerN)-1):
+        W['W_layer{}'.format(str(l+1))] =  np.asmatrix([np.random.normal(loc=0, scale=0.1, size=layerN[l+1]) for i in range(layerN[l])]) #generate n random nos from N(0,0.1) and store in layerN[l]xlayerN[l+1] dimension matrix
+    return W
+#%%
+     
+        
+def forward_prop(layerN, activation = 'sigmoid'):
+    return 'all activations'
