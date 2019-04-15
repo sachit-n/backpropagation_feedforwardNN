@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr 15 22:04:56 2019
+
+@author: sachitnagpal
+"""
+
+'''
+Steps: 
+    1. Initialize Weights Matrix
+    2. Forward propagation
+    3. Compute weight gradients using backpropagation
+        i) Begin from last hidden layer and find delta for each output node
+        ii) Compute delta for each node in previous layer recursively
+        iii) Compute weight and bias gradients
+    4. Update weights and biases
+    5. Repeat till no. of epochs
+'''
