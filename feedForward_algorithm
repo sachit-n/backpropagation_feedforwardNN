@@ -30,6 +30,7 @@ there are two hidden layers with 5 nodes each and the ouput layer has 10 nodes.
 '''
 
 #%%
+#defining function which initializes weights and outputs the weight matrix for each layer
 def initialize_weights(layerN):
     W = {}
     for l in range(len(layerN)-1):
