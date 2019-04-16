@@ -22,6 +22,7 @@ Steps:
 #%%
 
 import numpy as np
+from math import e
 
 
 #%%
@@ -36,14 +37,14 @@ class network:
     #The parameter, layerN is a list containing the number of nodes in each layer, including the input and output layers. Eg. layerN = [10000, 5,5,10] means the input layer has 10000 nodes, there are two hidden layers with 5 nodes each and the ouput layer has 10 nodes.
     def initialize_weights(self, layerN):
         for l in range(len(layerN)-1):
-            self.W['layer{}'.format(str(l+1))] =  np.asmatrix([np.random.normal(loc=0, scale=0.1, size=layerN[l+1]) for i in range(layerN[l])]) #generate n random nos from N(0,0.1) and store in layerN[l]xlayerN[l+1] dimension matrix
-        return self.W
+            self.W[l+1] =  np.asmatrix([np.random.normal(loc=0, scale=0.1, size=layerN[l+1]) for i in range(layerN[l])]) #generate n random nos from N(0,0.1) and store in layerN[l]xlayerN[l+1] dimension matrix
 
 
-#%%      
-    def forward_prop(self, activation='sigmoid',X,W):
-        for i in range(1, len(W)):
-            self.Z[i] = np.matmul(X, W['layer{}'.format(i)])
+      
+    def forward_prop(self,X,W, activation='sig'):
+        self.Z[1] = np.matmul(X, W[1])
+        self.A[1] = [1/(1+e**i) for i in self.Z[1].A1]
+        for i in range(2, len(W)+1):
+            self.Z[i] = np.matmul(self.A[i-1], self.W[i])
+            self.A[i] = [1/(1+e**i) for i in self.Z[i].A1]
             
-        
-        return 'all activations and zs'
