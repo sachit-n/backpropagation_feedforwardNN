@@ -27,13 +27,12 @@ import numpy as np
 #%%
 class network:
 
-    #defining function which initializes weights and outputs the weight matrix for each layer
     def __init__(self):
        self.W = {}              #Will contain weight matrices. Each key represents a layer and corresponding value is weight matrix for that layer
        self.Z = {}              #Will contain Z vectors (i.e. WX + b). Each key represents a layer and corresponding value is the vector Z for that layer. Vector Z has the Zi value for each node i
        self.A = {}              #Will contain the activation vectors (i.e. f(Z)). Each key represents a layer and corresponding value is the vector A for that layer. Vector Ai has the activation for each node i
     
-    
+    #defining function which initializes weights and outputs the weight matrix for each layer
     #The parameter, layerN is a list containing the number of nodes in each layer, including the input and output layers. Eg. layerN = [10000, 5,5,10] means the input layer has 10000 nodes, there are two hidden layers with 5 nodes each and the ouput layer has 10 nodes.
     def initialize_weights(self, layerN):
         for l in range(len(layerN)-1):
