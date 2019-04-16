@@ -5,39 +5,49 @@ Created on Mon Apr 15 22:04:56 2019
 
 @author: sachitnagpal
 """
-
+#%%
 
 '''
 Steps: 
     1. Initialize Weights Matrix
     2. Forward propagation
     3. Compute weight gradients using backpropagation
-        i) Begin from last hidden layer and find delta for each output node
+        i) Begin from output layer and find delta for each output node
         ii) Compute delta for each node in previous layer recursively
         iii) Compute weight and bias gradients
     4. Update weights and biases
     5. Repeat till no. of epochs
 '''
 
+#%%
 
 import numpy as np
 
 
-'''
-The parameter, layerN is a list containing the number of nodes in each layer, including the input and output layers. 
-Eg. layerN = [10000, 5,5,10] means the input layer has 10000 nodes, 
-there are two hidden layers with 5 nodes each and the ouput layer has 10 nodes.
-'''
+#%%
+class network:
+    '''
+    The parameter, layerN is a list containing the number of nodes in each layer, including the input and output layers. 
+    Eg. layerN = [10000, 5,5,10] means the input layer has 10000 nodes, 
+    there are two hidden layers with 5 nodes each and the ouput layer has 10 nodes.
+    '''
 
-#%%
-#defining function which initializes weights and outputs the weight matrix for each layer
-def initialize_weights(layerN):
-    W = {}
-    for l in range(len(layerN)-1):
-        W['W_layer{}'.format(str(l+1))] =  np.asmatrix([np.random.normal(loc=0, scale=0.1, size=layerN[l+1]) for i in range(layerN[l])]) #generate n random nos from N(0,0.1) and store in layerN[l]xlayerN[l+1] dimension matrix
-    return W
-#%%
-     
+    #defining function which initializes weights and outputs the weight matrix for each layer
+    def __init__(self):
+       self.W = {}
+       self.Z = {}
+       self.A = {}
+    
+    def initialize_weights(self, layerN):
+        for l in range(len(layerN)-1):
+            self.W['layer{}'.format(str(l+1))] =  np.asmatrix([np.random.normal(loc=0, scale=0.1, size=layerN[l+1]) for i in range(layerN[l])]) #generate n random nos from N(0,0.1) and store in layerN[l]xlayerN[l+1] dimension matrix
+        return self.W
+
+
+#%%      
+    def forward_prop(activation='sigmoid',X,W):
+        for i in range(1, len(W)):
+            z.vals[i] = np.matmul(X, W['layer{}'.format(i)])
+            
         
-def forward_prop(layerN, activation = 'sigmoid'):
-    return 'all activations'
+        return 'all activations and zs'
