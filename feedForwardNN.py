@@ -15,8 +15,9 @@ Steps:
         i) Begin from output layer and calculate derivative wrt z for each output node
         ii) Compute the same for each node in previous layer recursively
         iii) Compute weight and bias gradients
-    4. Update weights and biases
-    5. Repeat till no. of epochs
+    4. Repeat 2 and 3 for all observations
+    5. Compute weight gradients by taking average and update weight matrices
+    6. Repeat 2-5 till no. of epochs
 '''
 
 #%%
