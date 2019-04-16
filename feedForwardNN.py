@@ -27,7 +27,7 @@ from math import e
 
 #%%
 def sigmoid(x):
-    return (e**x)/(1+e**x)
+    return 1/(1+e**(-x))
 
 
 #%%
@@ -48,8 +48,10 @@ class network:
       
     def forward_prop(self,X,W, activation=sigmoid):
         self.Z[1] = np.matmul(X, W[1])
-        self.A[1] = [sigmoid(i) for i in self.Z[1].A1]
+        self.A[1] = [activation(i) for i in self.Z[1].A1]
         for i in range(2, len(W)+1):
             self.Z[i] = np.matmul(self.A[i-1], self.W[i])
-            self.A[i] = [1/(1+e**i) for i in self.Z[i].A1]
+            self.A[i] = [activation(i) for i in self.Z[i].A1]
+            
+    
             
