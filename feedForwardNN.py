@@ -46,21 +46,21 @@ class network:
         self.Z = {}                                 #Will contain Z vectors (i.e. XW + b). Each key represents a layer i and corresponding value is the vector Zi for that layer. Vector Zi has the Zij value for node j in layer i
         self.A = {}                                 #Will contain the activation vectors (i.e. f(Z)). Each key represents a layer i and corresponding value is the vector Ai for that layer. Vector Ai has the activation j for each node j in layer i
     
-    #defining function which initializes weights and outputs the weight matrix for each layer
+    #defining function which initializes weights and generates the weight matrix for each layer
     def initialize_weights(self):
-        for l in range(1, len(self.layerN)):
-            self.W[l] =  np.asmatrix([np.random.normal(loc=0, scale=0.1, size=self.layerN[l]) for i in range(self.layerN[l-1])]) #generate n random nos from N(0,0.1) and store in layerN[l]xlayerN[l+1] dimension matrix
+        for l in range(len(self.layerN)-1):
+            self.W[l] =  np.array([np.random.normal(loc=0, scale=0.1, size=self.layerN[l]) for i in range(self.layerN[l+1])]) #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
     
     #Perform forward propagation
     def forward_prop(self,X):                                                     #Compute Z vector for the first layer. Store it in key 1 of dictionary Z
-        self.A[0] = X                                                             #Compute activation vector for the first layer. Store it in key 1 of dictionary A
+        self.A[0] = np.array(X)                                                             #Compute activation vector for the first layer. Store it in key 1 of dictionary A
         for i in range(1, len(self.W)+1):
-            self.Z[i] = np.matmul(self.A[i-1], self.W[i])                                       #Compute Z vector for the layer i
-            self.A[i] = np.asmatrix([self.activation(i) for i in self.Z[i].A1])                 #Compute activation vector for the layer i. The last activation vector is the predicted Y.
+            self.Z[i] = self.W[i-1]@self.A[i-1].T                                       #Compute Z vector for the layer i
+            self.A[i] = np.array([self.activation(i) for i in self.Z[i]])                 #Compute activation vector for the layer i. The last activation vector is the predicted Y.
     
     #compute weight gradients using backpropagation        
     def compute_gradient(self, X, y):
-        y-self.A[len(self.A)]
+        np.dot(-(y-self.A[len(self.A)]), derivative(sigmoid, self.Z[len(self.Z)], dx=1e-6))
         return "weight_gradients"
     
     def fit(self, X, y, epoch=20):
