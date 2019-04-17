@@ -38,6 +38,7 @@ def tanh(x):
 #%%
 class network:
     
+    #The parameter, layerN is a list containing the number of nodes in each layer, including the input and output layers. Eg. layerN = [10000, 5,5,10] means the input layer has 10000 nodes, there are two hidden layers with 5 nodes each and the ouput layer has 10 nodes.   
     def __init__(self, layerN, activation=sigmoid, alpha=0.1):
         self.activation = activation
         self.layerN = layerN
@@ -46,7 +47,6 @@ class network:
         self.A = {}                                 #Will contain the activation vectors (i.e. f(Z)). Each key represents a layer i and corresponding value is the vector Ai for that layer. Vector Ai has the activation j for each node j in layer i
     
     #defining function which initializes weights and outputs the weight matrix for each layer
-    #The parameter, layerN is a list containing the number of nodes in each layer, including the input and output layers. Eg. layerN = [10000, 5,5,10] means the input layer has 10000 nodes, there are two hidden layers with 5 nodes each and the ouput layer has 10 nodes.   
     def initialize_weights(self):
         for l in range(1, len(self.layerN)):
             self.W[l] =  np.asmatrix([np.random.normal(loc=0, scale=0.1, size=self.layerN[l]) for i in range(self.layerN[l-1])]) #generate n random nos from N(0,0.1) and store in layerN[l]xlayerN[l+1] dimension matrix
