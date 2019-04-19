@@ -126,7 +126,7 @@ X = df.data[r]
 y = np.array(pd.get_dummies(df.target))[r]
 
 model = network(layerN=[X.shape[1], 3, 3, 3], alpha=0.1)
-model.fit(X,y, epoch=500)
+model.fit(X,y, epoch=100)
 #%%
 preds = []
 for i in range(len(X)):
