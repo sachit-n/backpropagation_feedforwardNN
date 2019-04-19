@@ -29,10 +29,9 @@ import numpy as np
 from math import e
 from scipy.misc import derivative
 from collections import deque
-from collections import Counter
+import operator
 
 #%%
-import operator
 
 #function defined to add the values of dictionaries with same keys. We will use it to add the weights matrix and alpha times the weight gradient matrix
 def combine_dicts(a, b, op=operator.add):
@@ -80,10 +79,10 @@ class network:
         
         #weight gradient
         for i in range(len(self.W)-1,-1,-1):
-            b.Wg[i] += self.deltas[i].reshape(-1,1)@self.A[i].reshape(1,-1)
+            self.Wg[i] += self.deltas[i].reshape(-1,1)@self.A[i].reshape(1,-1)
         
     def fit(self, X, y, epoch=20):
-        self.initialize_weights(self.layerN)
+        self.initialize_weights()
         for j in range(epoch):
             for i in range(len(X)):
                 self.forward_prop(X[i])
@@ -93,12 +92,21 @@ class network:
             #updating weights
             b.W = combine_dicts(b.W,b.Wg)
         
-    def predict(self, X):
-        return self.A[len(self.A)]
-    
-    
-    
+    def predict(self):
+        return self.A[len(self.A)-1]
+
 #%%
+#testing the network on the iris dataset
+from sklearn import datasets
+import pandas as pd
+df = datasets.load_iris()
+X = df.data
+y = np.array(pd.get_dummies(df.target))
+
+model = network(layerN=[X.shape[1], 3, 3, 3])
+model.fit(X,y)
+#%%
+#comparision of speeds in appending and calling for lists and dictionaries
 from time import time
 
 t = time()
@@ -142,19 +150,7 @@ for i in range(10000000):
     m = c[0,i]
 print(time()-t)
 
-#%%
-d1 = {'a': 100, 'b': 200, 'c':300}
-d2 = {'a': 300, 'b': 200, 'd':400}
-d = Counter(d1) + Counter(d2)
-#%%
-a = {'a': 'foo', 'b':'bar', 'c': 'baz'}
-c = {'a': 'spam', 'c':'ham', 'x': 'blah'}
 
-
-
-def combine_dicts(a, b, op=operator.add):
-    return {**a, **b, **{k: op(a[k], b[k]) for k in a.keys() & b}}
-    
             
     
             
