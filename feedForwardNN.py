@@ -30,6 +30,7 @@ from math import e
 from scipy.misc import derivative
 from collections import deque
 import operator
+from sklearn.preprocessing import MinMaxScaler
 
 #%%
 
@@ -63,9 +64,9 @@ class network:
     #defining function which initializes weights and generates the weight matrix for each layer
     def initialize_weights(self):
         for l in range(len(self.layerN)-1):
-            self.W[l] =  np.array([np.random.normal(loc=0, scale=0.01, size=self.layerN[l]) for i in range(self.layerN[l+1])]) #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
+            self.W[l] =  np.array([np.random.normal(loc=0, scale=1, size=self.layerN[l]) for i in range(self.layerN[l+1])]) #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
             self.Wg[l] = np.zeros(shape=[self.layerN[l+1], self.layerN[l]]) #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
-            self.b[l] = np.random.normal(loc=0, scale=0.01, size=self.layerN[l+1]).reshape(-1,1)
+            self.b[l] = np.random.normal(loc=0, scale=1, size=self.layerN[l+1]).reshape(-1,1)
             self.bg[l] = np.zeros(shape=[1, self.layerN[l+1]]).reshape(-1,1) 
             
     #Perform forward propagation
@@ -88,15 +89,19 @@ class network:
             self.bg[i] += self.deltas[i]
         
     def fit(self, X, y, epoch=100):
-        y=y.reshape(-1,1)
         self.initialize_weights()
+        print(self.W)
+        sc = MinMaxScaler()
+        sc.fit(X)
+        X = sc.transform(X)
         for j in range(epoch):
             for i in range(len(X)):
                 self.forward_prop(X[i])
-                self.compute_gradient(y[i])
+                self.compute_gradient(y[i].reshape(-1,1))
             #Computing average gradient for all the observations combined
             self.Wg = {k:(v/len(X))*self.alpha for k,v in self.Wg.items()}
             self.bg = {k:(v/len(X))*self.alpha for k,v in self.bg.items()}
+            print(self.W)
             #updating weights and biases
             self.W = combine_dicts(self.W,self.Wg)
             self.b = combine_dicts(self.b,self.bg)
@@ -126,12 +131,15 @@ X = df.data[r]
 y = np.array(pd.get_dummies(df.target))[r]
 
 model = network(layerN=[X.shape[1], 3, 3, 3], alpha=0.1)
-model.fit(X,y, epoch=100)
+model.fit(X,y, epoch=10000)
 #%%
 preds = []
+actual = []
 for i in range(len(X)):
     a = model.predict(X[i])
     preds.append(df.target_names[np.argmax(a)])
+    actual.append(df.target_names[np.argmax(y[i])])
+preds.count(preds[0])
 #%%
 #comparision of speeds in appending and calling for lists and dictionaries
 from time import time
