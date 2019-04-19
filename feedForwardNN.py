@@ -64,8 +64,8 @@ class network:
     #defining function which initializes weights and generates the weight matrix for each layer
     def initialize_weights(self):
         for l in range(len(self.layerN)-1):
-            self.W[l] =  np.array([np.random.normal(loc=0, scale=1, size=self.layerN[l]) for i in range(self.layerN[l+1])]) #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
-            self.Wg[l] = np.zeros(shape=[self.layerN[l+1], self.layerN[l]]) #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
+            self.W[l] =  np.random.normal(loc=0, scale=1, size=[self.layerN[l+1], self.layerN[l]])               #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
+            self.Wg[l] = np.zeros(shape=[self.layerN[l+1], self.layerN[l]])                 #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
             self.b[l] = np.random.normal(loc=0, scale=1, size=self.layerN[l+1]).reshape(-1,1)
             self.bg[l] = np.zeros(shape=[1, self.layerN[l+1]]).reshape(-1,1) 
             
@@ -131,7 +131,7 @@ X = df.data[r]
 y = np.array(pd.get_dummies(df.target))[r]
 
 model = network(layerN=[X.shape[1], 3, 3, 3], alpha=1.2, activation=tanh)
-model.fit(X,y, epoch=10000)
+model.fit(X,y, epoch=20000)
 #%%
 preds = []
 actual = []
