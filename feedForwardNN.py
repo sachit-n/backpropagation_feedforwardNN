@@ -34,7 +34,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 #%%
 
-#function defined to add the values of dictionaries with same keys. We will use it to add the weights matrix and alpha times the weight gradient matrix
+#function defined to add the values of dictionaries with same keys. We will use it to add the weights matrix and (-)alpha times the weight gradient matrix
 def combine_dicts(a, b, op=operator.sub):
     return {**a, **b, **{k: op(a[k], b[k]) for k in a.keys() & b}}
 
@@ -43,7 +43,7 @@ def sigmoid(x):
     return 1/(1+e**(-x))
 
 def tanh(x):
-    return (e**x-e**(-x))/e**x+e**(-x)
+    return (e**x-e**(-x))/(e**x+e**(-x))
 
 
 #%%
@@ -130,7 +130,7 @@ r = np.random.choice(150, size=150, replace=False)
 X = df.data[r]
 y = np.array(pd.get_dummies(df.target))[r]
 
-model = network(layerN=[X.shape[1], 3, 3, 3], alpha=0.1)
+model = network(layerN=[X.shape[1], 3, 3, 3], alpha=1.2, activation=tanh)
 model.fit(X,y, epoch=10000)
 #%%
 preds = []
@@ -140,6 +140,8 @@ for i in range(len(X)):
     preds.append(df.target_names[np.argmax(a)])
     actual.append(df.target_names[np.argmax(y[i])])
 preds.count(preds[0])
+p=pd.Series(preds)
+a=pd.Series(actual)
 #%%
 #comparision of speeds in appending and calling for lists and dictionaries
 from time import time
