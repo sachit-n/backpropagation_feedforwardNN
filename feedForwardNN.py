@@ -21,7 +21,7 @@ Steps:
 '''
 
 #%%
-#Reference : http://deeplearning.stanford.edu/wiki/index.php/Backpropagation_Algorithm
+#Algorithm : http://deeplearning.stanford.edu/wiki/index.php/Backpropagation_Algorithm
 
 #%%
 
@@ -47,6 +47,7 @@ class network:
         self.activation = activation
         self.layerN = layerN
         self.W = {}                                 #Will contain weight matrices. Each key represents a layer and corresponding value is weight matrix for that layer
+        self.Wg = {}                                #Will contain weight gradients. Each key represents a layer and corresponding value is weight gradients matrix for that layer
         self.Z = {}                                 #Will contain Z vectors (i.e. XW + b). Each key represents a layer i and corresponding value is the vector Zi for that layer. Vector Zi has the Zij value for node j in layer i
         self.A = {}                                 #Will contain the activation vectors (i.e. f(Z)). Each key represents a layer i and corresponding value is the vector Ai for that layer. Vector Ai has the activation j for each node j in layer i
     
@@ -54,7 +55,8 @@ class network:
     def initialize_weights(self):
         for l in range(len(self.layerN)-1):
             self.W[l] =  np.array([np.random.normal(loc=0, scale=0.1, size=self.layerN[l]) for i in range(self.layerN[l+1])]) #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
-    
+            self.Wg[l] = np.zeros(shape=[self.layerN[l+1], self.layerN[l]]) #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
+            
     #Perform forward propagation
     def forward_prop(self,X):                                                               #Compute Z vector for the first layer. Store it in key 1 of dictionary Z
         self.A[0] = np.array(X)                                                             #Compute activation vector for the first layer. Store it in key 1 of dictionary A
@@ -64,14 +66,20 @@ class network:
     
     #compute weight gradients using backpropagation        
     def compute_gradient(self,y):
-        deltas = deque([])
-        deltas.appendleft(np.multiply(-(y-self.A[len(self.A)-1]), derivative(self.activation, self.Z[len(self.Z)], dx=1e-6)))
+        self.deltas = deque([])
+        self.deltas.appendleft(np.multiply(-(y-self.A[len(self.A)-1]), derivative(self.activation, self.Z[len(self.Z)], dx=1e-6)))
         for i in range(len(self.layerN)-2,0, -1):
-            deltas.appendleft(np.multiply(derivative(self.activation, self.Z[i]), self.W[i].T@deltas[0]))        
+            self.deltas.appendleft(np.multiply(derivative(self.activation, self.Z[i]), self.W[i].T@self.deltas[0])) 
         
-    
+        #weight gradient
+        for i in range(len(self.W)-1,-1,-1):
+            b.Wg[i] += self.deltas[i].reshape(-1,1)@self.A[i].reshape(1,-1)
+        
     def fit(self, X, y, epoch=20):
-        self.W = 'final_weights'
+#        self.initialize_weights(self.layerN)
+#        for i in range(len(X)):
+            
+        return('a')
         
     def predict(self, X):
         return self.A[len(self.A)]
