@@ -88,9 +88,9 @@ class network:
                 self.forward_prop(X[i])
                 self.compute_gradient(y[i])
             #Computing average gradient for all the observations combined
-            b.Wg = {k:v/len(X) for k,v in b.Wg.items()}
+            self.Wg = {k:v/len(X) for k,v in self.Wg.items()}
             #updating weights
-            b.W = combine_dicts(b.W,b.Wg)
+            self.W = combine_dicts(self.W,self.Wg)
         
     def predict(self):
         return self.A[len(self.A)-1]
@@ -105,6 +105,7 @@ y = np.array(pd.get_dummies(df.target))
 
 model = network(layerN=[X.shape[1], 3, 3, 3])
 model.fit(X,y)
+model.predict()
 #%%
 #comparision of speeds in appending and calling for lists and dictionaries
 from time import time
