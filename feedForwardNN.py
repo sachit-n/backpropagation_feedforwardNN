@@ -33,10 +33,6 @@ import operator
 
 #%%
 
-#function defined to add the values of dictionaries that have same keys. We will use it to add the weights matrix and (-)alpha times the weight gradient matrix
-def combine_dicts(a, b, op=operator.sub):
-    return {**a, **b, **{k: op(a[k], b[k]) for k in a.keys() & b}}
-
 #A couple of activation functions
 class sigmoid:
     def fn(self,x):
@@ -108,8 +104,8 @@ class network:
             self.Wg = {k:(v/len(X))*self.alpha for k,v in self.Wg.items()}
             self.bg = {k:(v/len(X))*self.alpha for k,v in self.bg.items()}
             #updating weights and biases
-            self.W = combine_dicts(self.W,self.Wg)
-            self.b = combine_dicts(self.b,self.bg)
+            self.W = {**self.W, **self.Wg, **{k: operator.sub(self.W[k], self.Wg[k]) for k in self.W.keys() & self.Wg}}
+            self.b = {**self.b, **self.bg, **{k: operator.sub(self.b[k], self.bg[k]) for k in self.b.keys() & self.bg}}
             print(self.W)
         
     def predict(self, X):
@@ -139,6 +135,14 @@ yiris = np.array(pd.get_dummies(df.target))[r]
 
 model = network(layerN=[Xiris.shape[1], 2, 2, 3], alpha=0.1, activation=sigmoid)
 model.fit(Xiris,yiris, epoch=30000)
+
+#%%
+#saving model
+import pickle
+file = open("trained_iris_model_30k", 'wb')
+pickle.dump(model, file)
+
+
 #%%
 preds = []
 actual = []
