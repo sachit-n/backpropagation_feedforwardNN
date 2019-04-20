@@ -36,7 +36,7 @@ import operator
 #A couple of activation functions
 class sigmoid:
     def fn(self,x):
-        return 1/(1+e**(-self.x))
+        return 1/(1+e**(-x))
     def der(self,x):
         return self.fn(x)*(1-self.fn(x))
         
@@ -44,7 +44,7 @@ class tanh:
     def fn(self,x):
         return (e**x-e**(-x))/(e**x+e**(-x))
     def der(self,x):
-        return 1-self.fn(self.x)**2
+        return 1-self.fn(x)**2
 
 
 #%%
@@ -52,7 +52,7 @@ class network:
     
     #The parameter, layerN is a list containing the number of nodes in each layer, including the input and output layers. Eg. layerN = [10000, 5,5,10] means the input layer has 10000 nodes, there are two hidden layers with 5 nodes each and the ouput layer has 10 nodes.   
     def __init__(self, layerN, activation=sigmoid, alpha=0.1):
-        self.activation = activation
+        self.activation = activation()
         self.alpha = alpha
         self.layerN = layerN
         self.W = {}                                 #Will contain weight matrices. Each key represents a layer and corresponding value is weight matrix for that layer
@@ -92,6 +92,7 @@ class network:
     def fit(self, X, y, epoch=100):
         global w
         self.initialize_weights()
+        w=self.W
         print(self.W)
 #        sc = MinMaxScaler()
 #        sc.fit(X)
@@ -115,11 +116,12 @@ class network:
 #%%
 #debugging
 def C(w):
-    return 0.5*np.sum((yiris[0]-sigmoid(w@Xiris[0]))**2)
+    a=sigmoid()
+    return 0.5*np.sum((yiris[0]-a.fn(w@Xiris[0]))**2)
 
 #Derivatives have been verified to be correct
 #Converging slowly. Batch gradient descent can be applied. 
-#Also need to add regularization
+#Also regularization can be added
 
 
     
@@ -139,11 +141,12 @@ model.fit(Xiris,yiris, epoch=30000)
 #%%
 #saving model
 import pickle
-file = open("trained_iris_model_30k", 'wb')
+file = open("iris_model_30k", 'wb')
 pickle.dump(model, file)
 
 
 #%%
+#147 out of 150 predictions accurate in training set from above model
 preds = []
 actual = []
 for i in range(len(Xiris)):
