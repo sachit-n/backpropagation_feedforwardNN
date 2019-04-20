@@ -30,11 +30,11 @@ from math import e
 from scipy.misc import derivative
 from collections import deque
 import operator
-from sklearn.preprocessing import MinMaxScaler
+#from sklearn.preprocessing import MinMaxScaler
 
 #%%
 
-#function defined to add the values of dictionaries with same keys. We will use it to add the weights matrix and (-)alpha times the weight gradient matrix
+#function defined to add the values of dictionaries that have same keys. We will use it to add the weights matrix and (-)alpha times the weight gradient matrix
 def combine_dicts(a, b, op=operator.sub):
     return {**a, **b, **{k: op(a[k], b[k]) for k in a.keys() & b}}
 
@@ -64,9 +64,9 @@ class network:
     #defining function which initializes weights and generates the weight matrix for each layer
     def initialize_weights(self):
         for l in range(len(self.layerN)-1):
-            self.W[l] =  np.random.normal(loc=0, scale=1, size=[self.layerN[l+1], self.layerN[l]])               #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
+            self.W[l] =  np.random.normal(loc=0, scale=0.1, size=[self.layerN[l+1], self.layerN[l]])               #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
             self.Wg[l] = np.zeros(shape=[self.layerN[l+1], self.layerN[l]])                 #generate n random nos from N(0,0.1) and store in layerN[l+1]xlayerN[l] dimension matrix
-            self.b[l] = np.random.normal(loc=0, scale=1, size=self.layerN[l+1]).reshape(-1,1)
+            self.b[l] = np.random.normal(loc=0, scale=0.1, size=self.layerN[l+1]).reshape(-1,1)
             self.bg[l] = np.zeros(shape=[1, self.layerN[l+1]]).reshape(-1,1) 
             
     #Perform forward propagation
@@ -74,26 +74,27 @@ class network:
         self.A[0] = np.array(X).reshape(-1,1)                                                             #Compute activation vector for the first layer. Store it in key 1 of dictionary A
         for i in range(1, len(self.layerN)):
             self.Z[i] = self.W[i-1]@self.A[i-1] + self.b[i-1]                                           #Compute Z vector for the layer i
-            self.A[i] = np.array([self.activation(i) for i in self.Z[i]])                   #Compute activation vector for the layer i. The last activation vector is the predicted Y.
+            self.A[i] = self.activation(self.Z[i])                                    #Compute activation vector for the layer i. The last activation vector is the predicted Y.
     
     #compute weight gradients using backpropagation        
     def compute_gradient(self,y):
         self.deltas = deque([])
         self.deltas.appendleft(np.multiply(-(y-self.A[len(self.A)-1]), derivative(self.activation, self.Z[len(self.Z)], dx=1e-6)))
         for i in range(len(self.layerN)-2,0, -1):
-            self.deltas.appendleft(np.multiply(derivative(self.activation, self.Z[i]), self.W[i].T@self.deltas[0])) 
+            self.deltas.appendleft(np.multiply(derivative(self.activation, self.Z[i], dx=1e-6), self.W[i].T@self.deltas[0])) 
         
         #weights and bias gradient
         for i in range(len(self.W)-1,-1,-1):
-            self.Wg[i] += self.deltas[i].reshape(-1,1)@self.A[i].reshape(1,-1)
+            self.Wg[i] += self.deltas[i]@self.A[i].T
             self.bg[i] += self.deltas[i]
         
     def fit(self, X, y, epoch=100):
+        global w
         self.initialize_weights()
         print(self.W)
-        sc = MinMaxScaler()
-        sc.fit(X)
-        X = sc.transform(X)
+#        sc = MinMaxScaler()
+#        sc.fit(X)
+#        X = sc.transform(X)
         for j in range(epoch):
             for i in range(len(X)):
                 self.forward_prop(X[i])
@@ -101,25 +102,26 @@ class network:
             #Computing average gradient for all the observations combined
             self.Wg = {k:(v/len(X))*self.alpha for k,v in self.Wg.items()}
             self.bg = {k:(v/len(X))*self.alpha for k,v in self.bg.items()}
-            print(self.W)
             #updating weights and biases
             self.W = combine_dicts(self.W,self.Wg)
             self.b = combine_dicts(self.b,self.bg)
+            print(self.W)
         
     def predict(self, X):
         self.forward_prop(X)
         return self.A[len(self.A)-1]
     
 #%%
-from sklearn import datasets
-import pandas as pd
-df = datasets.load_iris()
-r = np.random.choice(150, size=150, replace=False)
-X = df.data[r]
-y = np.array(pd.get_dummies(df.target))[r]
+#debugging
+def C(w):
+    return 0.5*np.sum((yiris[0]-sigmoid(w@Xiris[0]))**2)
 
-model = network(layerN=[X.shape[1], 3, 3, 3])
-model.fit(X,y, epoch=1)
+#Derivatives have been verified to be correct
+#Converging slowly. Batch gradient descent can be applied. 
+#Also need to add regularization
+
+
+    
 
 #%%
 #testing the network on the iris dataset
@@ -127,18 +129,18 @@ from sklearn import datasets
 import pandas as pd
 df = datasets.load_iris()
 r = np.random.choice(150, size=150, replace=False)
-X = df.data[r]
-y = np.array(pd.get_dummies(df.target))[r]
+Xiris = df.data[r]
+yiris = np.array(pd.get_dummies(df.target))[r]
 
-model = network(layerN=[X.shape[1], 3, 3, 3], alpha=1.2, activation=tanh)
-model.fit(X,y, epoch=20000)
+model = network(layerN=[Xiris.shape[1], 2, 2, 3], alpha=0.5, activation=sigmoid)
+model.fit(Xiris,yiris, epoch=30000)
 #%%
 preds = []
 actual = []
-for i in range(len(X)):
-    a = model.predict(X[i])
+for i in range(len(Xiris)):
+    a = model.predict(Xiris[i])
     preds.append(df.target_names[np.argmax(a)])
-    actual.append(df.target_names[np.argmax(y[i])])
+    actual.append(df.target_names[np.argmax(yiris[i])])
 preds.count(preds[0])
 p=pd.Series(preds)
 a=pd.Series(actual)
