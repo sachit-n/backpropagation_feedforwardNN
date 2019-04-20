@@ -112,6 +112,33 @@ class network:
     def predict(self, X):
         self.forward_prop(X)
         return self.A[len(self.A)-1]
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 #%%
 #debugging
@@ -120,10 +147,10 @@ def C(w):
     return 0.5*np.sum((yiris[0]-a.fn(w@Xiris[0]))**2)
 
 #Derivatives have been verified to be correct
-#Converging slowly. Batch gradient descent can be applied. 
-#Also regularization can be added
 
-
+#Future Improvements:
+    #Converging slowly. Batch gradient descent can be applied. 
+    #Also regularization can be added
     
 
 #%%
@@ -135,7 +162,7 @@ r = np.random.choice(150, size=150, replace=False)
 Xiris = df.data[r]
 yiris = np.array(pd.get_dummies(df.target))[r]
 
-model = network(layerN=[Xiris.shape[1], 2, 2, 3], alpha=0.1, activation=sigmoid)
+model = network(layerN=[Xiris.shape[1], 2, 2, 3], alpha=0.1, activation=sigmoid())
 model.fit(Xiris,yiris, epoch=30000)
 
 #%%
@@ -158,6 +185,7 @@ p=pd.Series(preds)
 a=pd.Series(actual)
 #%%
 #comparision of speeds in appending and calling for lists and dictionaries
+
 from time import time
 
 t = time()
