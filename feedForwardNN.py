@@ -27,7 +27,6 @@ Steps:
 
 import numpy as np
 from math import e
-from scipy.misc import derivative
 from collections import deque
 import operator
 #from sklearn.preprocessing import MinMaxScaler
@@ -39,11 +38,17 @@ def combine_dicts(a, b, op=operator.sub):
     return {**a, **b, **{k: op(a[k], b[k]) for k in a.keys() & b}}
 
 #A couple of activation functions
-def sigmoid(x):
-    return 1/(1+e**(-x))
-
-def tanh(x):
-    return (e**x-e**(-x))/(e**x+e**(-x))
+class sigmoid:
+    def fn(self,x):
+        return 1/(1+e**(-self.x))
+    def der(self,x):
+        return self.fn(x)*(1-self.fn(x))
+        
+class tanh:
+    def fn(self,x):
+        return (e**x-e**(-x))/(e**x+e**(-x))
+    def der(self,x):
+        return 1-self.fn(self.x)**2`
 
 
 #%%
@@ -74,14 +79,14 @@ class network:
         self.A[0] = np.array(X).reshape(-1,1)                                                             #Compute activation vector for the first layer. Store it in key 1 of dictionary A
         for i in range(1, len(self.layerN)):
             self.Z[i] = self.W[i-1]@self.A[i-1] + self.b[i-1]                                           #Compute Z vector for the layer i
-            self.A[i] = self.activation(self.Z[i])                                    #Compute activation vector for the layer i. The last activation vector is the predicted Y.
+            self.A[i] = self.activation.fn(self.Z[i])                                    #Compute activation vector for the layer i. The last activation vector is the predicted Y.
     
     #compute weight gradients using backpropagation        
     def compute_gradient(self,y):
         self.deltas = deque([])
-        self.deltas.appendleft(np.multiply(-(y-self.A[len(self.A)-1]), derivative(self.activation, self.Z[len(self.Z)], dx=1e-6)))
+        self.deltas.appendleft(np.multiply(-(y-self.A[len(self.A)-1]), self.activation.der(self.Z[len(self.Z)])))
         for i in range(len(self.layerN)-2,0, -1):
-            self.deltas.appendleft(np.multiply(derivative(self.activation, self.Z[i], dx=1e-6), self.W[i].T@self.deltas[0])) 
+            self.deltas.appendleft(np.multiply(self.activation.der(self.Z[i]), self.W[i].T@self.deltas[0])) 
         
         #weights and bias gradient
         for i in range(len(self.W)-1,-1,-1):
@@ -132,7 +137,7 @@ r = np.random.choice(150, size=150, replace=False)
 Xiris = df.data[r]
 yiris = np.array(pd.get_dummies(df.target))[r]
 
-model = network(layerN=[Xiris.shape[1], 2, 2, 3], alpha=0.5, activation=sigmoid)
+model = network(layerN=[Xiris.shape[1], 2, 2, 3], alpha=0.1, activation=sigmoid)
 model.fit(Xiris,yiris, epoch=30000)
 #%%
 preds = []
