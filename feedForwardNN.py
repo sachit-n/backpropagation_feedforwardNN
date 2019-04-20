@@ -79,20 +79,18 @@ class network:
     
     #compute weight gradients using backpropagation        
     def compute_gradient(self,y):
-        self.deltas = deque([])
-        self.deltas.appendleft(np.multiply(-(y-self.A[len(self.A)-1]), self.activation.der(self.Z[len(self.Z)])))
+        self.deltas = deque([])             #will contain derivative of Z with respect to the cost function for each layer. deque data structure is used as it will be calculated from the last layer to the first, and deque is faster than lists for appending items to the beginning of a list.
+        self.deltas.appendleft(np.multiply(-(y-self.A[len(self.A)-1]), self.activation.der(self.Z[len(self.Z)])))       #Vector of derivatives of the cost function wrt Z for the last layer/output layer
         for i in range(len(self.layerN)-2,0, -1):
-            self.deltas.appendleft(np.multiply(self.activation.der(self.Z[i]), self.W[i].T@self.deltas[0])) 
+            self.deltas.appendleft(np.multiply(self.activation.der(self.Z[i]), self.W[i].T@self.deltas[0]))             #Appending derivative of cost function wrt to z for previous layers starting with second last layer all the way to the first hidden layer
         
-        #weights and bias gradient
+        #Computing weights and bias gradient matrices/vectors for each layer and adding it to the existing gradient. For each observation, we will add in this manner, and then divide by number of observations before updating the weights.
         for i in range(len(self.W)-1,-1,-1):
             self.Wg[i] += self.deltas[i]@self.A[i].T
             self.bg[i] += self.deltas[i]
         
     def fit(self, X, y, epoch=100):
-        global w
         self.initialize_weights()
-        w=self.W
         print(self.W)
 #        sc = MinMaxScaler()
 #        sc.fit(X)
@@ -101,12 +99,13 @@ class network:
             for i in range(len(X)):
                 self.forward_prop(X[i])
                 self.compute_gradient(y[i].reshape(-1,1))
-            #Computing average gradient for all the observations combined
+            #Computing average gradient for all the observations combined. Also multiplying by alpha to get the final values to subtract from the parameters
             self.Wg = {k:(v/len(X))*self.alpha for k,v in self.Wg.items()}
             self.bg = {k:(v/len(X))*self.alpha for k,v in self.bg.items()}
-            #updating weights and biases
+            #updating the weights and biases
             self.W = {**self.W, **self.Wg, **{k: operator.sub(self.W[k], self.Wg[k]) for k in self.W.keys() & self.Wg}}
             self.b = {**self.b, **self.bg, **{k: operator.sub(self.b[k], self.bg[k]) for k in self.b.keys() & self.bg}}
+            #printing weights to observe convergence/divergence
             print(self.W)
         
     def predict(self, X):
