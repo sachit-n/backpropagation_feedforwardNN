@@ -48,7 +48,7 @@ class tanh:
     def fn(self,x):
         return (e**x-e**(-x))/(e**x+e**(-x))
     def der(self,x):
-        return 1-self.fn(self.x)**2`
+        return 1-self.fn(self.x)**2
 
 
 #%%
