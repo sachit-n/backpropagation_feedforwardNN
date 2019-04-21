@@ -1,2 +1,2 @@
 # backpropagation_feedforwardNN
-Writing the feedforward neural network algorithm and using it to predict handwritten digits, without using tensorflow, keras and similar packages.
+Writing the feedforward neural network algorithm using Numpy, without using tensorflow, keras and similar packages.
