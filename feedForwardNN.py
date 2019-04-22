@@ -92,9 +92,9 @@ class network:
     def fit(self, X, y, epoch=100):
         self.initialize_weights()
         print(self.W)
-#        sc = MinMaxScaler()
-#        sc.fit(X)
-#        X = sc.transform(X)
+        #sc = MinMaxScaler()
+        #sc.fit(X)
+        #X = sc.transform(X)
         for j in range(epoch):
             for i in range(len(X)):
                 self.forward_prop(X[i])
@@ -111,8 +111,7 @@ class network:
     def predict(self, X):
         self.forward_prop(X)
         return self.A[len(self.A)-1]
- 
-
+    
 
 
 
