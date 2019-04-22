@@ -147,7 +147,7 @@ def C(w):
 #Derivatives have been verified to be correct
 
 #Future Improvements:
-    #Converging slowly. Batch gradient descent can be applied. 
+    #Converging slowly. Stochastic gradient descent can be applied. 
     #Also regularization can be added
     
 
